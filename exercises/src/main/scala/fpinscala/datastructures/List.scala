@@ -50,6 +50,20 @@ object List { // `List` companion object. Contains functions for creating and wo
     foldRight(ns, 1.0)(_ * _) // `_ * _` is more concise notation for `(x,y) => x * y`; see sidebar
 
 
+  def foldRight2[A,B](as: List[A], z: B, y: B)(f: (A, B) => B): B = // n.b. this breaks the ability to have the f return a different type
+    as match {
+      case Nil => z
+      case Cons(x, _) if x == y => y
+      case Cons(x, xs) => f(x, foldRight2(xs, z, y)(f))
+    }
+
+  // No you can't short the recursion using foldRight unless you rewrite it as above, because f has no control of the match
+  def product3(ns: List[Double]) =
+    foldRight2(ns, 1.0, 0.0)((a,b) => (a,b) match {
+      case (x, y) => println("foo"); x * y
+    })
+
+
   def tail[A](l: List[A]): List[A] = {
     l match {
       case Cons(x, xs) => xs
@@ -79,15 +93,26 @@ object List { // `List` companion object. Contains functions for creating and wo
     }
   }
 
-  // TODO
   def init[A](l: List[A]): List[A] = {
-    l match {
-      case Cons(x, Cons(xs, Nil)) => init(Cons(x, Nil))
-      case Cons(x, xs) => init(Cons(x, xs))
+    def loop[A](l: List[A], m: List[A]): List[A] = {
+      l match {
+        case Nil => m
+        case Cons(h, Nil) => m
+        case Cons(h, t) => loop(t, append(m, List(h)))
+      }
     }
+    loop(l, Nil)
   }
 
-  def length[A](l: List[A]): Int = ???
+  def length[A](l: List[A]): Int = {
+    def loop[A](l: List[A], i: Int): Int = {
+      l match {
+        case Nil => i
+        case Cons(h, t) => loop(t, i + 1)
+      }
+    }
+    loop(l, 0)
+  }
 
   def foldLeft[A,B](l: List[A], z: B)(f: (B, A) => B): B = ???
 
