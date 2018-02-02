@@ -44,7 +44,7 @@ object List { // `List` companion object. Contains functions for creating and wo
     }
 
   def sum2(ns: List[Int]) =
-    foldRight(ns, 0)((x,y) => x + y)
+    foldRight(ns, 0)((x,_) => x + 1)
 
   def product2(ns: List[Double]) =
     foldRight(ns, 1.0)(_ * _) // `_ * _` is more concise notation for `(x,y) => x * y`; see sidebar
@@ -63,10 +63,9 @@ object List { // `List` companion object. Contains functions for creating and wo
       case (x, y) => println("foo"); x * y
     })
 
-
   def tail[A](l: List[A]): List[A] = {
     l match {
-      case Cons(x, xs) => xs
+      case Cons(_, xs) => xs
       case _ => Nil
     }
   }
@@ -112,6 +111,10 @@ object List { // `List` companion object. Contains functions for creating and wo
       }
     }
     loop(l, 0)
+  }
+
+  def length2[A](l: List[A]):Int = {
+    foldRight(l, 0)((_,b) => b + 1)
   }
 
   def foldLeft[A,B](l: List[A], z: B)(f: (B, A) => B): B = ???
